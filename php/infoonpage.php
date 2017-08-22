@@ -3,6 +3,11 @@
     require('init1.php');
     $sql="select * from chatroom order by chattime desc LIMIT 50";
     $result=mysqli_query($conn,$sql);
-    $rows=mysqli_fetch_all($result,MYSQLI_ASSOC);
-    echo json_encode($rows);
+    $posts=array();
+    while($row = mysqli_fetch_array($result,MYSQLI_ASSOC)){
+        $posts[]=$row;
+    }
+    if($posts!=null){
+        echo json_encode($posts);
+    }
 ?>

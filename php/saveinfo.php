@@ -1,5 +1,5 @@
 <?php
-    header("Content-Type:application/json;charset:utf-8");
+    header("Content-Type:application/json;charset=utf-8");
     @$uname=$_REQUEST['uname'] or die('{"code":-2,"msg":"用户名是必须的"}');
     @$cinfo=$_REQUEST['cinfo'] or die('{"code":-3,"msg":"请输入聊天内容"}');
     require("init1.php");

@@ -77,6 +77,7 @@
                 <hr>
                 <div class="inputbox">
                     <textarea rows="5" v-model="chatInfo" placeholder="请输入聊天内容..."></textarea>
+                    <span>{{info}}</span>
                     <button @click="sendToPage">发送</button>
                 </div>
             </div>`,
@@ -85,12 +86,13 @@
                     username: "",
                     chatInfo: "",
                     chatList:[],
+                    info:"",
                 }
             },
             created: function () {
                 this.username = this.$route.params.name;
                 this.$http.get('php/infoonpage.php').then(function(data){
-                    // console.log(data.body);
+                    console.log(data.body);
                     var reverseArr=data.body.reverse();
                     
                     this.chatList=reverseArr;
@@ -99,22 +101,46 @@
             updated:function(){
                 var chatbox=document.querySelector(".chatinfobox");
                 chatbox.scrollTop=5000;
+                
             },
             methods: {
                 sendToPage: function () {
+                    this.info="";
                     this.$http.get('php/saveinfo.php?uname=' + this.username + "&cinfo=" + this.chatInfo)
                         .then(function (data) {
                             // console.log(data.body.msg);
                             setTimeout(function () {
                                 this.$http.get('php/infoonpage.php').then(function(data){
-                                    // console.log(data.body);
+                                    console.log(data);
                                     var reverseArr=data.body.reverse();
                                  
                                     this.chatList=reverseArr;
+                                    this.chatInfo="";
+
+                                   
                                 })
                                 //第二个bind
-                            }.bind(this), 1000);
-                        }.bind(this))
+                            }.bind(this), 500);//timeout 定时器
+                            
+                        }.bind(this));
+
+                    var i=0;
+                    var timer=setInterval(function(){     //interval 定时器
+                        i++;
+                        this.$http.get('php/infoonpage.php')
+                        .then(function(data){
+                            console.log(data.body);
+                            var reverseArr=data.body.reverse();
+                            
+                            this.chatList=reverseArr;
+                        });
+                        if(i==5){
+                            clearInterval(timer);
+                            timer=null;
+                            // console.log(this.info);
+                            this.info="已30s未输入,断开连接..."
+                        }
+                    }.bind(this),6000) //interval 定时器
                 }
             }
         });
