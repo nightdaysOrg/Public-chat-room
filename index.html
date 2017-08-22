@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="js/vue.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/vue-resource.js"></script>
+    <link rel="stylesheet" href="css/index.css">
+    <title>公共聊天室小练习</title>
+</head>
+
+<body>
+    <div id="example">
+        <h1>{{msg}}</h1>
+        <router-view></router-view>
+    </div>
+
+
+
+
+
+
+
+    <script>
+        var myStart = Vue.component("start", {
+            template: `
+            <div class="getinfobox">
+                <label>用户名:</label>
+                <input type="text" placeholder="请输入用户名..." v-model="uname">
+                <span>{{warnMsg}}</span>
+                <br>
+                <br>
+                <button @click="jump">进入</button>
+            </div>
+            `,
+            data: function () {
+                return {
+                    uname: "",
+                    warnMsg: "",
+                }
+            },
+            methods: {
+                jump: function () {
+                    if (this.uname != "") {
+                        this.$router.push('/chatroom/' + this.uname);
+                    } else {
+                        this.warnMsg = "请输入用户名..."
+                    }
+                },
+            },
+            watch: {
+                uname: function () {
+                    if (this.uname != "") {
+                        this.warnMsg = ""
+                    }
+                }
+            }
+        });
+
+        var myChatroom = Vue.component("chatroom", {
+            template: `
+            <div>
+                <h2>你的名字:{{username}}</h2>
+                <div class="chatinfobox">
+                    <ul>
+                        <li v-for="item in chatList">
+                            <span>{{item.name}} 在 :</span>
+                            <span> {{item.chattime}} 说 :</span>
+                            <p>{{item.chatinfo}}</p>
+                            <hr>
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+                <div class="inputbox">
+                    <textarea rows="5" v-model="chatInfo" placeholder="请输入聊天内容..."></textarea>
+                    <button @click="sendToPage">发送</button>
+                </div>
+            </div>`,
+            data: function () {
+                return {
+                    username: "",
+                    chatInfo: "",
+                    chatList:[],
+                }
+            },
+            created: function () {
+                this.username = this.$route.params.name;
+                this.$http.get('php/infoonpage.php').then(function(data){
+                    // console.log(data.body);
+                    var reverseArr=data.body.reverse();
+                    
+                    this.chatList=reverseArr;
+                })
+            },
+            updated:function(){
+                var chatbox=document.querySelector(".chatinfobox");
+                chatbox.scrollTop=5000;
+            },
+            methods: {
+                sendToPage: function () {
+                    this.$http.get('php/saveinfo.php?uname=' + this.username + "&cinfo=" + this.chatInfo)
+                        .then(function (data) {
+                            // console.log(data.body.msg);
+                            setTimeout(function () {
+                                this.$http.get('php/infoonpage.php').then(function(data){
+                                    // console.log(data.body);
+                                    var reverseArr=data.body.reverse();
+                                 
+                                    this.chatList=reverseArr;
+                                })
+                                //第二个bind
+                            }.bind(this), 1000);
+                        }.bind(this))
+                }
+            }
+        });
+
+        const myRoutes = [{
+                path: '',
+                component: myStart
+            },
+            {
+                path: '/start',
+                component: myStart
+            },
+            {
+                path: '/chatroom/:name',
+                component: myChatroom
+            }
+        ];
+
+        const myRouter = new VueRouter({
+            routes: myRoutes,
+        })
+
+
+
+        new Vue({
+            router: myRouter,
+            el: "#example",
+            data: {
+                msg: "Hello Vue.js"
+            }
+        })
+    </script>
+</body>
+
+</html>
