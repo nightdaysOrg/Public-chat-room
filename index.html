@@ -177,13 +177,13 @@
 
                                 this.chatList = reverseArr;
                             });
-                        if (i == 30) {
+                        if (i == 36) {
                             clearInterval(timer);
                             timer = null;
                             // console.log(this.info);
                             this.info = "已 3 mins未输入,可能已断开连接,发送新消息后重连..."
                         }
-                    }.bind(this), 6000) //interval 定时器
+                    }.bind(this), 5000) //interval 定时器
                 }
             }
         });
