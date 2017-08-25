@@ -121,9 +121,10 @@
                 var chatbox = document.querySelector(".chatinfobox");
                 chatbox.scrollTop = 5000;
                 var spanArr = $(".nameInSpan");
-                // console.log(spanArr.length);
+
                 for (var i = 0; i < spanArr.length; i++) {
                     var span = spanArr[i];
+                    
                     // console.log($(span).html()); 
                     if ($(span).html() == "李小卷儿") {
                         $(span).parent().addClass("list-group-item-danger");
@@ -136,10 +137,14 @@
                     } else if ($(span).html() == "花泽类") {
                         $(span).parent().addClass("bgcolor-jilaozi");
                         $(span).next().html(" 紫色大基佬");
+                    } else if ($(span).html() == "只爱曾艳芬") {
+                        $(span).parent().addClass("list-group-item-info");
+                        $(span).next().html(" 我才是最爱她");
 
                     } else if ($(span).html() == this.username) {
                         $(span).parent().addClass("list-group-item-info")
-                    }
+                    };
+                    
                 };
                 
             },
@@ -156,8 +161,6 @@
                                     this.chatList = data.body;
                                     this.chatList = reverseArr;
                                     this.chatInfo = "";
-
-
                                 })
                                 //第二个bind
                             }.bind(this), 500); //timeout 定时器
@@ -174,11 +177,11 @@
 
                                 this.chatList = reverseArr;
                             });
-                        if (i == 10) {
+                        if (i == 30) {
                             clearInterval(timer);
                             timer = null;
                             // console.log(this.info);
-                            this.info = "已60s未输入,可能已断开连接,发送新消息后重连..."
+                            this.info = "已 3 mins未输入,可能已断开连接,发送新消息后重连..."
                         }
                     }.bind(this), 6000) //interval 定时器
                 }
