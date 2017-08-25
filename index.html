@@ -8,13 +8,18 @@
     <script src="js/vue.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/vue-resource.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!--[if lt IE9]>
+        <script src="js/html5shiv.min.js"></script>
+        <script src="js/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="css/animate.css">
     <link rel="stylesheet" href="css/index.css">
     <title>公共聊天室小练习</title>
 </head>
 
 <body>
     <div id="example">
-        <h1>{{msg}}</h1>
         <router-view></router-view>
     </div>
 
@@ -23,17 +28,29 @@
 
 
 
-
+    <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script>
         var myStart = Vue.component("start", {
             template: `
-            <div class="getinfobox">
-                <label>用户名:</label>
-                <input type="text" placeholder="请输入用户名..." v-model="uname">
-                <span>{{warnMsg}}</span>
-                <br>
-                <br>
-                <button @click="jump">进入</button>
+            <div class="getinfobox container">
+                <div class="alert alert-success alert-dismissible animated swing" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    并不知道即时通信原理的<strong>菜鸟</strong>,按照自己的思路写了个小玩意儿,用自己的思路实现了部分功能,望小伙伴们多多鼓励和支持!
+                </div>
+
+                <div class="alert alert-danger animated flash" role="alert">
+                    <strong>注意:</strong>本网页程序,因功能有限,同时为了节约流量,在输入信息之后的<strong>一分钟后</strong>会断开连接,<strong>再次输入后</strong>,重新连接一分钟!
+                </div>
+
+                <div class="form-group animated slideInLeft">
+                    <label for="exampleInputUser">
+                        用户名:<span class="text-danger">{{warnMsg}}</span>
+                    </label>
+                    <input type="text" class="form-control" id="exampleInputUser" placeholder="请输入用户名..." v-model="uname">
+                    <button type="button" class="btn btn-primary btn-block" @click="jump">进入</button>
+                </div>
+                <img src="img/ylc.jpg" class="img-responsive animated zoomIn"/>
             </div>
             `,
             data: function () {
@@ -62,85 +79,108 @@
 
         var myChatroom = Vue.component("chatroom", {
             template: `
-            <div>
-                <h2>你的名字:{{username}}</h2>
+            <div class="container">
+                <h2 class="yourname">你的名字:{{username}}</h2>
                 <div class="chatinfobox">
-                    <ul>
-                        <li v-for="item in chatList">
-                            <span>{{item.name}} 在 :</span>
-                            <span> {{item.chattime}} 说 :</span>
-                            <p>{{item.chatinfo}}</p>
-                            <hr>
-                        </li>
-                    </ul>
+                    <div class="container">
+                        <ul class="list-group">
+                            <li v-for="item in chatList" class="animated jackInTheBox list-group-item">
+                                <span class="nameInSpan">{{item.name}}</span><b></b>
+                                <span> 在 : {{item.chattime}} 说 :</span>
+                                <p>{{item.chatinfo}}</p>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <hr>
                 <div class="inputbox">
-                    <textarea rows="5" v-model="chatInfo" placeholder="请输入聊天内容..."></textarea>
-                    <span>{{info}}</span>
-                    <button @click="sendToPage">发送</button>
+                    <p class="text-danger">{{info}}</p>
+                    <textarea rows="3" v-model="chatInfo" placeholder="请输入聊天内容..." class="form-control chat-textarea"></textarea>
+                    <button @click="sendToPage" class="btn btn-success">发送</button>
                 </div>
             </div>`,
             data: function () {
                 return {
                     username: "",
                     chatInfo: "",
-                    chatList:[],
-                    info:"",
+                    chatList: [],
+                    info: "",
                 }
             },
             created: function () {
                 this.username = this.$route.params.name;
-                this.$http.get('php/infoonpage.php').then(function(data){
-                    console.log(data.body);
-                    var reverseArr=data.body.reverse();
-                    
-                    this.chatList=reverseArr;
-                })
+                this.$http.get('php/infoonpage.php').then(function (data) {
+                    // console.log(data.body);
+                    var reverseArr = data.body.reverse();
+                    this.chatList = reverseArr;
+                });
+                var chatbox = document.querySelector(".chatinfobox");
+                chatbox.scrollTop = 5000;
             },
-            updated:function(){
-                var chatbox=document.querySelector(".chatinfobox");
-                chatbox.scrollTop=5000;
+            updated: function () {
+                var chatbox = document.querySelector(".chatinfobox");
+                chatbox.scrollTop = 5000;
+                var spanArr = $(".nameInSpan");
+                // console.log(spanArr.length);
+                for (var i = 0; i < spanArr.length; i++) {
+                    var span = spanArr[i];
+                    // console.log($(span).html()); 
+                    if ($(span).html() == "李小卷儿") {
+                        $(span).parent().addClass("list-group-item-danger");
+                        $(span).next().html(" vip");
+
+                    } else if ($(span).html() == "蜜桃姚") {
+                        $(span).parent().addClass("list-group-item-warning");
+                        $(span).next().html(" vip");
+
+                    } else if ($(span).html() == "花泽类") {
+                        $(span).parent().addClass("bgcolor-jilaozi");
+                        $(span).next().html(" 紫色大基佬");
+
+                    } else if ($(span).html() == this.username) {
+                        $(span).parent().addClass("list-group-item-info")
+                    }
+                };
                 
             },
             methods: {
                 sendToPage: function () {
-                    this.info="";
+                    this.info = "";
                     this.$http.get('php/saveinfo.php?uname=' + this.username + "&cinfo=" + this.chatInfo)
                         .then(function (data) {
                             // console.log(data.body.msg);
                             setTimeout(function () {
-                                this.$http.get('php/infoonpage.php').then(function(data){
-                                    console.log(data);
-                                    var reverseArr=data.body.reverse();
-                                 
-                                    this.chatList=reverseArr;
-                                    this.chatInfo="";
+                                this.$http.get('php/infoonpage.php').then(function (data) {
+                                    // console.log(data);
+                                    var reverseArr = data.body.reverse();
+                                    this.chatList = data.body;
+                                    this.chatList = reverseArr;
+                                    this.chatInfo = "";
 
-                                   
+
                                 })
                                 //第二个bind
-                            }.bind(this), 500);//timeout 定时器
-                            
+                            }.bind(this), 500); //timeout 定时器
+
                         }.bind(this));
 
-                    var i=0;
-                    var timer=setInterval(function(){     //interval 定时器
+                    var i = 0;
+                    var timer = setInterval(function () { //interval 定时器
                         i++;
                         this.$http.get('php/infoonpage.php')
-                        .then(function(data){
-                            console.log(data.body);
-                            var reverseArr=data.body.reverse();
-                            
-                            this.chatList=reverseArr;
-                        });
-                        if(i==5){
+                            .then(function (data) {
+                                // console.log(data.body);
+                                var reverseArr = data.body.reverse();
+
+                                this.chatList = reverseArr;
+                            });
+                        if (i == 10) {
                             clearInterval(timer);
-                            timer=null;
+                            timer = null;
                             // console.log(this.info);
-                            this.info="已30s未输入,断开连接..."
+                            this.info = "已60s未输入,可能已断开连接,发送新消息后重连..."
                         }
-                    }.bind(this),6000) //interval 定时器
+                    }.bind(this), 6000) //interval 定时器
                 }
             }
         });

@@ -1,14 +1,69 @@
+#example {
+  position: relative;
+}
 .inputbox {
+  width: 100%;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
 }
-.chatinfobox {
+.inputbox p {
+  text-align: center;
+}
+.inputbox .chat-textarea {
+  float: left;
+  width: 79%;
+  height: 80px;
+  margin-bottom: 5px;
+  margin-left: 2px;
+}
+.inputbox .btn-success {
+  float: right;
+  width: 19%;
+  height: 80px;
+  margin-bottom: 5px;
+  margin-right: 2px;
+}
+.yourname {
   position: fixed;
-  top: 200px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  margin: 0;
+  top: 0;
   left: 0;
   right: 0;
-  bottom: 200px;
+  background: white;
+  border-bottom: gray;
+  z-index: 100;
+}
+.chatinfobox {
+  position: fixed;
+  top: 50px;
+  bottom: 90px;
   overflow: auto;
+  z-index: -100;
+}
+.chatinfobox .bgcolor-jilaozi {
+  background-color: rgba(133, 77, 152, 0.3);
+  color: #854d98;
+}
+.chatinfobox li {
+  margin-top: 7px;
+  border-radius: 7px;
+  width: 100%;
+}
+.getinfobox {
+  width: 370px;
+}
+.getinfobox > div {
+  margin: 0 auto;
+  margin-top: 17px;
+}
+.getinfobox button {
+  margin-top: 25px;
+}
+.getinfobox img {
+  margin-top: 17px;
 }
